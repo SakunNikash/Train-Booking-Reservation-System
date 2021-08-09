@@ -11,10 +11,8 @@ import javafx.stage.Stage;
 //-----------------------------------------------
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class TrainBookingSystem extends Application {
     /**
@@ -55,33 +53,32 @@ public class TrainBookingSystem extends Application {
         }
         return seat;
     }
-    public static String[][] bubbleSort(String[][] arr)
+    public static String[] bubbleSort(String[] arr)
     {
         int n = arr.length;
         for (int i=0; i<n;i++){
-            if (arr[i][0]==null){           //bubble sorting in String
-                arr[i][0]="";
+            if (arr[i]==null){           //bubble sorting in String
+                arr[i]="";
             }
         }
         for (int i = 0; i < n-1; i++)
             for (int j = 0; j < n-i-1; j++)
-                if (0 > arr[j+1][0].compareTo(arr[j][0]))
+                if (0 > arr[j+1].compareTo(arr[j]))
                 {
                     // swap arr[j+1] and arr[i]
-                    String temp = arr[j][0];
-                    arr[j][0] = arr[j+1][0];
-                    arr[j+1][0] = temp;
+                    String temp = arr[j];
+                    arr[j] = arr[j+1];
+                    arr[j+1] = temp;
                 }
         return arr;
     }
 
     /* Print the arrays' elements */
-    public static void printArray(String arr[][])
+    public static void printArray(HashSet<String> arr)
     {
-        int n = arr.length;
-        for (int i=0; i<n; ++i)         //print elements line by line
-            System.out.print(arr[i][0] + " ");
-        System.out.println();
+        for (String i : arr){
+            System.out.println(i);
+        }
     }
     private static void programm(String File) throws IOException {
         Scanner sc=new Scanner(System.in);
@@ -115,7 +112,7 @@ public class TrainBookingSystem extends Application {
                     System.out.println("Enter \"V\" to view all the seat ");
                     System.out.println("Enter \"E\" to view empty seats ");
                     System.out.println("Enter \"D\" to delete a booked seats ");
-                    System.out.println("Enter \"F\" to find a seat by customer name ");
+                    System.out.println("Enter \"F\" to find a seat by customer's ID ");
                     System.out.println("Enter \"S\" Save Data ");
                     System.out.println("Enter \"L\" Load Data ");
                     System.out.println("Enter \"O\" Oder Customer's name  ");
@@ -174,7 +171,7 @@ public class TrainBookingSystem extends Application {
                     System.out.println("Enter \"V\" to view all the seat ");
                     System.out.println("Enter \"E\" to view empty seats ");
                     System.out.println("Enter \"D\" to delete a booked seats ");
-                    System.out.println("Enter \"F\" to find a seat by customer name ");
+                    System.out.println("Enter \"F\" to find a seat by customer's ID ");
                     System.out.println("Enter \"S\" Save Data ");
                     System.out.println("Enter \"L\" Load Data ");
                     System.out.println("Enter \"O\" Order Customer's name  ");
@@ -265,12 +262,19 @@ public class TrainBookingSystem extends Application {
 
     private static void bubblesorting() {
         //create duplicate array
-        String[][] Duplicate_Seats=new String[42][2];
+        String[] Duplicate_Seats=new String[42];
         for (int i=0; Seats.length>i; i++)
-            Duplicate_Seats[i][0]=Seats[i][0];
+            Duplicate_Seats[i]=Seats[i][0];
         bubbleSort(Duplicate_Seats);
         System.out.println("Sorted List");
-        printArray(Duplicate_Seats);
+        HashSet<String> set=new HashSet<String>();
+        for (int i=0; Seats.length>i; i++)
+            if (set.add(Duplicate_Seats[i])){
+                continue;
+            } else {
+                continue;
+            }
+        printArray(set);
         System.out.println();
         System.out.println();
     }
@@ -391,10 +395,31 @@ public class TrainBookingSystem extends Application {
         primaryStage.showAndWait();
     }
     private static void addCustomer() {
-        Scanner sc=new Scanner(System.in);
-        System.out.print("Enter Customer's Name:-");
-        String name=sc.next();System.out.print("Enter Customer's ID:-");
-        String id=sc.next();
+        String[] Seats_by_id = new String[42];
+        for (int i=0;i<42;i++){
+            Seats_by_id[i]=Seats[i][1];
+        }
+        String name;
+        String id;
+        Stream<String> seats = Arrays.stream(Seats_by_id);
+        for (;;){
+            Scanner sc=new Scanner(System.in);
+            System.out.print("Enter Customer's Name:-");
+            name=sc.next();System.out.print("Enter Customer's ID:-");
+            id=sc.next();
+            String finalId = id;
+            try {
+                if (seats.anyMatch(ids -> ids.contains(finalId))){
+                    System.out.println("Already added");
+                    continue;
+                } else {
+                    break;
+                }
+            } catch (Exception e) {
+                System.out.print("NullPointerException Caught");
+                break;
+            }
+        }
         //create temporary list for assigned value from buttons to array
         ArrayList<Integer> tempList= new ArrayList<>();
         //Gui part for booking seats
@@ -430,10 +455,12 @@ public class TrainBookingSystem extends Application {
         Button button43 = new Button("  OK   ");
         button43.setLayoutX(310);
         button43.setLayoutY(380);                       //ok button section(add customer)
+        String finalName = name;
+        String finalId1 = id;
         button43.setOnAction((event) -> {
             for (int i=0;i<tempList.size();i++){
-                Seats[tempList.get(i)][0]=name;
-                Seats[tempList.get(i)][1]=id;
+                Seats[tempList.get(i)][0]= finalName;
+                Seats[tempList.get(i)][1]= finalId1;
             }
             primaryStage.close();
         });
