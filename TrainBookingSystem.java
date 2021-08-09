@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -501,6 +502,7 @@ public class TrainBookingSystem extends Application {
                     break;
                 case "Q":
                 case "q":
+                    Platform.exit();
                     break start;
                 default:
                     System.out.println("Invalid Input");
